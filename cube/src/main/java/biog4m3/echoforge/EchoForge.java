@@ -40,7 +40,6 @@ public class EchoForge {
     private void runGameLoop() throws IOException, InterruptedException {
         final long maxElapsedTime = 1_000_000_000L; // 1 segundo
         long startTime = System.nanoTime();
-        long lastUpdateTime = startTime;
         long lastFrameTime = startTime;
         double tickDelta = 0.0;
 
@@ -50,17 +49,15 @@ public class EchoForge {
 
         while (running) {
             long currentTime = System.nanoTime();
-            long elapsedTime = currentTime - lastUpdateTime;
-
-            // Se tempo é muito alto (janela minimizada ou travou), reseta
+            long elapsedTime = currentTime - lastFrameTime;
+            
             if (elapsedTime < 0 || elapsedTime > maxElapsedTime) {
                 elapsedTime = NANOS_PER_TICK;
             }
 
-            lastUpdateTime = currentTime;
+            lastFrameTime = currentTime;
             tickDelta += (double) elapsedTime / NANOS_PER_TICK;
 
-            // Executa Ticks constantes (mesmo sem janela ativa)
             while (tickDelta >= 1) {
                 context.tickCount++;
                 doTick(context);
@@ -70,14 +67,12 @@ public class EchoForge {
 
             context.lifeTime = currentTime - startTime;
 
-            // Se a janela estiver minimizada, pula o render
             if (!window.isMinimized()) {
                 doFrame(context);
                 window.swapBuffers();
                 frames++;
             }
 
-            // Atualiza FPS e TPS
             if (System.currentTimeMillis() - lastSecondTime >= 1000) {
                 context.currentFPS = frames;
                 context.currentTPS = ticks;
@@ -87,7 +82,6 @@ public class EchoForge {
                 lastSecondTime += 1000;
             }
 
-            // Eventos de janela
             window.pollEvents();
 
             Thread.sleep(SLEEP_MILLIS);
