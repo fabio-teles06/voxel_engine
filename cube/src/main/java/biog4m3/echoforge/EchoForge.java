@@ -2,8 +2,6 @@ package biog4m3.echoforge;
 
 import java.io.IOException;
 
-import biog4m3.echoforge.render.RenderManager;
-import biog4m3.echoforge.render.opengl.OpenGLRenderer;
 import biog4m3.echoforge.util.Debug;
 
 public class EchoForge {
@@ -14,6 +12,7 @@ public class EchoForge {
     private final GameContext context = new GameContext();
     private boolean running = false;
     private Window window;
+    private SystemManager systemManager;
 
     public void run() {
         this.running = true;
@@ -33,7 +32,10 @@ public class EchoForge {
         Debug.setEnabled(true);
         Debug.log("Initializing EchoForge...");
         this.window = new Window("EchoForge", 800, 600);
-        RenderManager.use(new OpenGLRenderer());
+        this.systemManager = new SystemManager();
+        
+        //this.systemManager.init(context);
+        
         runGameLoop();
     }
 
@@ -96,17 +98,10 @@ public class EchoForge {
     }
 
     private void doFrame(GameContext context) {
-        RenderManager.beginFrame();
-
-        RenderManager.clear(0f, 0f, .1f, 1.0f);
-        // RenderManager.render(context);
-
-        RenderManager.endFrame();
     }
 
     private void shutdown() {
         running = false;
         window.destroy();
-        RenderManager.shutdown();
     }
 }

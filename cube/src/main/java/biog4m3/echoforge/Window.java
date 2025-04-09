@@ -3,6 +3,7 @@ package biog4m3.echoforge;
 import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
 
 public class Window {
     private static boolean glfwInitialized = false;
@@ -32,6 +33,8 @@ public class Window {
         long window = GLFW.glfwCreateWindow(width, height, title, 0, 0);
         if (window == 0)
             throw new RuntimeException("Failed to create the GLFW window");
+
+        GL.createCapabilities();
         return window;
     }
 
