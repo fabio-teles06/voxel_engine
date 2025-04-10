@@ -15,19 +15,19 @@ public class Debug {
         return enabled;
     }
 
-    public static void log(String message) {
-        log(Level.INFO, message);
+    public static void log(String tag, String message) {
+        log(Level.INFO, tag, message);
     }
 
-    public static void warn(String message) {
-        log(Level.WARN, message);
+    public static void warn(String tag, String message) {
+        log(Level.WARN, tag, message);
     }
 
-    public static void error(String message) {
-        log(Level.ERROR, message);
+    public static void error(String tag, String message) {
+        log(Level.ERROR, tag, message);
     }
 
-    public static void log(Level level, String message) {
+    public static void log(Level level, String tag, String message) {
         if (!enabled)
             return;
 
@@ -51,6 +51,7 @@ public class Debug {
         }
 
         String reset = "\u001B[0m";
-        System.out.println(color + prefix + " " + message + reset);
+        String formattedMessage = String.format("%s%s %s: %s%s", color, prefix, tag, message, reset);
+        System.out.println(formattedMessage);
     }
 }

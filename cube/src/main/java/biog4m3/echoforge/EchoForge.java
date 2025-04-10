@@ -5,10 +5,11 @@ import java.io.IOException;
 import biog4m3.echoforge.util.Debug;
 
 public class EchoForge {
-    private final int TICK_RATE = 20;
-    private final long NANOS_PER_TICK = 1_000_000_000L / TICK_RATE;
+    private static final int TICK_RATE = 20;
+    private static final long NANOS_PER_TICK = 1_000_000_000L / TICK_RATE;
     private static final int SLEEP_MILLIS = 1;
-    private final long MAX_ELAPSED_TIME = 1_000_000_000L;
+    private static final long MAX_ELAPSED_TIME = 1_000_000_000L;
+    private static final String EngineTAG = "Echoforge";
 
     private final GameContext context = new GameContext();
     private boolean running = false;
@@ -19,10 +20,10 @@ public class EchoForge {
             runGameLoop();
         } catch (IOException e) {
             e.printStackTrace();
-            Debug.error("Failed to initialize EchoForge: " + e.getMessage());
+            Debug.error(EngineTAG, "Failed to initialize EchoForge: " + e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            Debug.error("Game loop interrupted: " + e.getMessage());
+            Debug.error(EngineTAG, "Game loop interrupted: " + e.getMessage());
         } finally {
             shutdown();
         }
@@ -30,7 +31,7 @@ public class EchoForge {
 
     private void init() throws IOException, InterruptedException {
         Debug.setEnabled(true);
-        Debug.log("Initializing EchoForge...");
+        Debug.log(EngineTAG, "Initializing");
 
         this.window = new Window("EchoForge", 800, 600);
 
@@ -75,7 +76,7 @@ public class EchoForge {
                 context.currentFPS = frames;
                 context.currentTPS = ticks;
 
-                Debug.log("FPS: " + frames + " | TPS: " + ticks);
+                Debug.log(EngineTAG, "FPS: " + context.currentFPS + ", TPS: " + context.currentTPS);
 
                 frames = 0;
                 ticks = 0;

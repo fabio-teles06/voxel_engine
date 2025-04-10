@@ -3,7 +3,6 @@ package biog4m3.echoforge;
 import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL;
 
 public class Window {
     private static boolean glfwInitialized = false;
