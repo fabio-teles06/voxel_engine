@@ -8,18 +8,18 @@ public class EchoForge {
     private final int TICK_RATE = 20;
     private final long NANOS_PER_TICK = 1_000_000_000L / TICK_RATE;
     private static final int SLEEP_MILLIS = 1;
+    private final long MAX_ELAPSED_TIME = 1_000_000_000L;
 
     private final GameContext context = new GameContext();
     private boolean running = false;
     private Window window;
-    private SystemManager systemManager;
-
     public void run() {
-        this.running = true;
         try {
             this.init();
+            runGameLoop();
         } catch (IOException e) {
             e.printStackTrace();
+            Debug.error("Failed to initialize EchoForge: " + e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             Debug.error("Game loop interrupted: " + e.getMessage());
@@ -31,57 +31,55 @@ public class EchoForge {
     private void init() throws IOException, InterruptedException {
         Debug.setEnabled(true);
         Debug.log("Initializing EchoForge...");
+
         this.window = new Window("EchoForge", 800, 600);
-        this.systemManager = new SystemManager();
-        
-        //this.systemManager.init(context);
-        
-        runGameLoop();
+
+        this.running = true;
     }
 
     private void runGameLoop() throws IOException, InterruptedException {
-        final long maxElapsedTime = 1_000_000_000L; // 1 segundo
-        long startTime = System.nanoTime();
-        long lastFrameTime = startTime;
+        long lastFrameTime = System.nanoTime();
+        long startTime = lastFrameTime;
         double tickDelta = 0.0;
 
         int frames = 0;
         int ticks = 0;
-        long lastSecondTime = System.currentTimeMillis();
+        long lastSecond = System.currentTimeMillis();
 
         while (running) {
-            long currentTime = System.nanoTime();
-            long elapsedTime = currentTime - lastFrameTime;
-            
-            if (elapsedTime < 0 || elapsedTime > maxElapsedTime) {
-                elapsedTime = NANOS_PER_TICK;
+            long now = System.nanoTime();
+            long elapsed = now - lastFrameTime;
+            lastFrameTime = now;
+
+            if (elapsed < 0 || elapsed > MAX_ELAPSED_TIME) {
+                elapsed = NANOS_PER_TICK;
             }
 
-            lastFrameTime = currentTime;
-            tickDelta += (double) elapsedTime / NANOS_PER_TICK;
+            tickDelta += (double) elapsed / NANOS_PER_TICK;
 
             while (tickDelta >= 1) {
+                doTick();
                 context.tickCount++;
-                doTick(context);
                 tickDelta -= 1;
                 ticks++;
             }
 
-            context.lifeTime = currentTime - startTime;
+            context.lifeTime = now - startTime;
 
             if (!window.isMinimized()) {
-                doFrame(context);
-                window.swapBuffers();
+                doFrame();
                 frames++;
             }
 
-            if (System.currentTimeMillis() - lastSecondTime >= 1000) {
+            if (System.currentTimeMillis() - lastSecond >= 1000) {
                 context.currentFPS = frames;
                 context.currentTPS = ticks;
 
+                Debug.log("FPS: " + frames + " | TPS: " + ticks);
+
                 frames = 0;
                 ticks = 0;
-                lastSecondTime += 1000;
+                lastSecond += 1000;
             }
 
             window.pollEvents();
@@ -90,18 +88,26 @@ public class EchoForge {
         }
     }
 
-    private void doTick(GameContext context) {
-        Debug.log("fps: " + context.currentFPS);
+    private void doTick() {
         if (window.shouldClose()) {
             shutdown();
         }
+
+        //systemManager.update(context);
     }
 
-    private void doFrame(GameContext context) {
+    private void doFrame() {
+
+        window.swapBuffers();
     }
 
     private void shutdown() {
+        if (!running)
+            return;
+
         running = false;
-        window.destroy();
+        if (window != null) {
+            window.destroy();
+        }
     }
 }

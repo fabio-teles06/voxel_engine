@@ -33,8 +33,6 @@ public class Window {
         long window = GLFW.glfwCreateWindow(width, height, title, 0, 0);
         if (window == 0)
             throw new RuntimeException("Failed to create the GLFW window");
-
-        GL.createCapabilities();
         return window;
     }
 
