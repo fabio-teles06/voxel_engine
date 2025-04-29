@@ -1,0 +1,9 @@
+{
+    "resources":[
+        {
+            "type":"shader",
+            "name":"test",
+            "path":"/shaders/test"
+        }
+    ]
+}

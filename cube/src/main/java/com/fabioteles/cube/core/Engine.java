@@ -3,6 +3,8 @@ package com.fabioteles.cube.core;
 import java.io.InputStream;
 
 import com.fabioteles.cube.render.Shader;
+import com.fabioteles.cube.resource.ResourceManager;
+import com.fabioteles.cube.resource.SceneLoader;
 
 public class Engine implements Runnable {
     public static final int TARGET_FPS = 60; // 0 to disable
@@ -38,28 +40,22 @@ public class Engine implements Runnable {
             cleanup();
         }
     }
-
-    Shader test;
-
     protected void init() throws Exception {
         window.init();
         timer.init();
 
-        test = ResourceManager.load("shaders/test", (ignored, name) -> {
+        ResourceManager.registerLoader("shader", (name) -> {
             try {
-                InputStream vs = ResourceManager.class.getClassLoader().getResourceAsStream(name + ".vs");
-                if (vs == null)
-                    vs = new java.io.FileInputStream(name + ".vs");
-
-                InputStream fs = ResourceManager.class.getClassLoader().getResourceAsStream(name + ".fs");
-                if (fs == null)
-                    fs = new java.io.FileInputStream(name + ".fs");
+                InputStream vs = ResourceManager.getInputStream(name + ".vs");
+                InputStream fs = ResourceManager.getInputStream(name + ".fs");
                 return new Shader(vs, fs, name);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
         });
+
+        SceneLoader.loadSceneResources("scene1.json");
     }
 
     protected void gameLoop() {
@@ -100,7 +96,11 @@ public class Engine implements Runnable {
         // Update game logic here
     }
 
+    Shader test;
     protected void render() {
+        if (test == null) {
+            test = (Shader) ResourceManager.load("test", "shader", "shaders/test");
+        }
         test.bind();
 
         test.unbind();

@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 
 import org.lwjgl.opengl.GL20;
 
-import com.fabioteles.cube.core.Resource;
+import com.fabioteles.cube.resource.Resource;
 
 public class Shader implements Resource {
     private final int programId;

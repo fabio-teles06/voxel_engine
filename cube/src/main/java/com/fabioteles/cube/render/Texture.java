@@ -1,6 +1,6 @@
 package com.fabioteles.cube.render;
 
-import com.fabioteles.cube.core.Resource;
+import com.fabioteles.cube.resource.Resource;
 
 public class Texture implements Resource {
     private final String path;

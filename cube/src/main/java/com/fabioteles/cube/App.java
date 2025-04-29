@@ -1,6 +1,6 @@
 package com.fabioteles.cube;
 
-import biog4m3.echoforge.engine.Engine;
+import com.fabioteles.cube.core.Engine;
 
 public class App {
     public static void main(String[] args) {
